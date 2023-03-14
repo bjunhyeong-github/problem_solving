@@ -36,7 +36,7 @@ int main() {
             roman = "";
             cout << "로마자를 입력하세요: ";
         }
-        
+       
     }
     return 0;
 }

@@ -20,7 +20,8 @@ int romanToInt(string s) {
 int main() {
     string roman;
     char c;
-    cout << "로마자를 입력하세요: ";
+    
+    cout << "[로마자를 입력하세요]: ";
     while (true) {
         c = _getch();
         if (c == 27) { // ESC키를 누르면 프로그램 종료
@@ -34,8 +35,15 @@ int main() {
             int num = romanToInt(roman);
             cout << "는 정수로 " << num << "입니다." << endl;
             roman = "";
-            cout << "로마자를 입력하세요: ";
+            cout << "[로마자를 입력하세요]: ";
         }
+        else if (c == ' ') {
+            cout << "오류발생 로마자를 입력하세요" << endl;
+        }
+        else if (c == '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' ) {
+            cout << "오류발생 로마자를 입력하세요" << endl;
+        }
+       
        
     }
     return 0;

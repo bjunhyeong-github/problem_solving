@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int romanToInt(string s) {
+int romanToInt(string s) {                
     unordered_map<char, int> romanMap = 
     { {'I', 1}, {'V', 5}, {'X', 10}, {'L', 50}, {'C', 100}, {'D', 500}, {'M', 1000} };
     int result = 0;
@@ -26,6 +26,7 @@ int main() {
     while (true) {
         c = _getch();
         if (c == 27) { // ESC키를 누르면 프로그램 종료
+            cout << "Esc키를 눌러 프로그램이 종료됨" <<endl;
             break;
         }
         else if (isalpha(c)) { // 알파벳이 입력될 경우
@@ -52,6 +53,7 @@ int main() {
         else if (c == '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' ) {
             cout << "오류발생 로마자를 입력하세요: " << endl;
         }
+
        
        
     }

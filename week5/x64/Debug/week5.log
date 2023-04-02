@@ -1,0 +1,4 @@
+﻿  AutoGoal.cpp
+C:\Users\User\OneDrive\바탕 화면\problem_solving\week5\AutoGoal.cpp(25,19): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\User\OneDrive\바탕 화면\problem_solving\week5\AutoGoal.cpp(25,22): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  week5.vcxproj -> C:\Users\User\OneDrive\바탕 화면\problem_solving\x64\Debug\week5.exe

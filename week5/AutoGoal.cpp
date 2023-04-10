@@ -74,11 +74,11 @@ void bfs(int startRow, int startCol, int endRow, int endCol) {
             int dist = curr.dist;
             while (!q.empty()) q.pop();
             moveCursor(0, ROW + 1);
-            cout << "최단경로: " << dist << endl;
+            cout << "출발점에서 도착점까지의 최단경로: " << dist << endl;
             return;
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 1; i < 4; i++) {
             int nextRow = curr.row + dx[i];
             int nextCol = curr.col + dy[i];
 
@@ -95,14 +95,18 @@ void bfs(int startRow, int startCol, int endRow, int endCol) {
         Sleep(50); // delay to show each step of BFS algorithm
     }
     moveCursor(0, ROW + 1);
-    cout << "No path found" << endl;
+    cout << "길을 찾을 수 없습니다. 다시 입력해주세요" << endl;
 }
 
 int main() {
-    int startRow = 1;
-    int startCol = 1;
-    int endRow = 8;
-    int endCol = 18;
+    cout << "기능을 사용하시려면 출발점과 도착점을 입력해주세요" << endl;
+    int startRow, startCol = 0;
+    int endRow, endCol = 0;
+    cout << "출발점을 입력해주세요(x y / 1 1 ~ 8 18 까지): ";
+    cin >> startRow >> startCol;
+
+    cout << "도착점을 입력해주세요(x y / 1 1 ~ 8 18 까지): ";
+    cin >> endRow >> endCol;
 
     bfs(startRow, startCol, endRow, endCol);
 

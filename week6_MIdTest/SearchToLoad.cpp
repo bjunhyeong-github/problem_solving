@@ -1,138 +1,125 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <unordered_map>
-#include <conio.h>
-#include <random> // 랜덤 함수 사용을 위한 헤더 파일
+#include <algorithm>
+#include <random>
 
 using namespace std;
 
-const int WALL = 1; // 벽
-const int EMPTY = 0; // 빈 칸
+class MapGenerator {
+public:
+    MapGenerator(int width, int height, int numObstacles, unsigned int seed) :
+        width_(width), height_(height), numObstacles_(numObstacles), rng_(seed) {}
 
-// n x m 크기의 랜덤 맵 생성
-vector<vector<int>> generateRandomMap(int n, int m) {
-    vector<vector<int>> map(n, vector<int>(m, EMPTY)); // 빈 맵 생성
+    vector<std::vector<bool>> generate() {
+        vector<std::vector<bool>> map(height_, std::vector<bool>(width_, false));
 
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<int> dis(0, n * m - 1); // 0부터 n*m-1까지의 정수를 랜덤하게 생성하는 분포
+        //장애물 랜덤위치에 생성
+        for (int i = 0; i < numObstacles_; i++) {
+            int x = randInt(0, width_ - 1);
+            int y = randInt(0, height_ - 1);
+            map[y][x] = true;
+        }
 
-    int wall_count = n * m / 3; // 벽의 개수
-    for (int i = 0; i < wall_count; i++) {
-        int x = dis(gen) % n;
-        int y = dis(gen) % m;
-        map[x][y] = WALL;
+        return map;
     }
 
-    return map;
-}
+private:
+    int width_;
+    int height_;
+    int numObstacles_;
+    mt19937 rng_; // 난수생성 라이브러리
 
-// (sx, sy)에서 (ex, ey)로 가는 최단 거리를 구하는 BFS 함수
-int bfs(vector<vector<int>>& map, int sx, int sy, int ex, int ey) {
-    int n = map.size();
-    int m = map[0].size();
+    int randInt(int min, int max) {
+        uniform_int_distribution<int> dist(min, max);
+        return dist(rng_);
+    }
+};
 
-    vector<vector<bool>> visited(n, vector<bool>(m, false));
-    queue<pair<int, int>> q;
+struct Node {
+    int x;
+    int y;
+    int dist;
+};
 
-    visited[sx][sy] = true;
-    q.push({ sx, sy });
-    int dist = 0;
+int bfs(const vector<vector<bool>>& map, int startX, int startY, int endX, int endY) {
+    int height = map.size();
+    int width = map[0].size();
+    vector<vector<bool>> visited(height, vector<bool>(width, false));
+    vector<vector<int>> dist(height, vector<int>(width, -1));
+    queue<Node> q;
+    q.push({ startX, startY, 0 });
+    visited[startY][startX] = true;
+    dist[startY][startX] = 0;
 
     while (!q.empty()) {
-        int q_size = q.size();
+        Node curr = q.front();
+        q.pop();
 
-        for (int i = 0; i < q_size; i++) {
-            int x = q.front().first;
-            int y = q.front().second;
-            q.pop();
-
-            if (x == ex && y == ey) {
-                return dist;
-            }
-
-            // 상하좌우 이동
-            int dx[] = { -1, 0, 1, 0 };
-            int dy[] = { 0, 1, 0, -1 };
-
-            for (int j = 0; j < 4; j++) {
-                int nx = x + dx[j];
-                int ny = y + dy[j];
-
-                if (nx < 0 || nx >= n || ny < 0 || ny >= m) {
-                    continue;
-                }
-
-                if (map[nx][ny] == WALL || visited[nx][ny]) {
-                    continue;
-                }
-
-                visited[nx][ny] = true;
-                q.push({ nx, ny });
-            }
+        if (curr.x == endX && curr.y == endY) {
+            return curr.dist;
         }
 
-        dist++;
+        //현재 위치에서 갈 수 있는 4방향 체크
+        int dx[4] = { -1, 0, 1, 0 };
+        int dy[4] = { 0, 1, 0, -1 };
+        for (int i = 0; i < 4; i++) {
+            int nextX = curr.x + dx[i];
+            int nextY = curr.y + dy[i];
+            if (nextX >= 0 && nextX < width && nextY >= 0 && nextY < height && !visited[nextY][nextX] && !map[nextY][nextX]) {
+                visited[nextY][nextX] = true;
+                q.push({ nextX, nextY, curr.dist + 1 });
+            }
+        }
     }
 
-    return -1; // 도착점에 도달할 수 없는 경우
+    //도착점에 도달하지 못한 경우
+    return -1;
 }
-
-
 
 int main() {
-    
-    int n, m;
-    char c;
+    //맵 사이즈와 장애물 설정
+    int width, height, numObstacles;
+    int sx, sy, ex, ey;
+    cout << "맵 사이즈 입력(x y): ";
+    cin >> width >> height;
+    cout << "장애물 개수 입력: ";
+    cin >> numObstacles;
+    cout << "출발점 입력(x y): ";
+    cin >> sx >> sy;
+    cout << "도착점 입력(x y): ";
+    cin >> ex >> ey;
 
-    cout << "시작하려면 아무키나 눌러주세요(ESC를 누르면 종료됩니다..)" << endl;
-    while (true) {    
-        c = _getch();     //프로그램 종료
+    // Create a MapGenerator object with user input and a random seed
+    std::random_device rd;
+    MapGenerator mapGen(width, height, numObstacles, rd());
 
-        if (c == 27) {
-            cout << "Esc키를 눌러 프로그램이 종료됨" << endl;
-            break;
-        }
-        else {
-            // 맵 크기 입력
-            cout << "길찾기 기능을 시작합니다" << endl;
-            cout << "맵의 크기를 입력하세요 (n m): ";
-            cin >> n >> m;
+    //맵 생성
+    vector<vector<bool>> map = mapGen.generate();
 
-            // 맵 생성
-            vector<vector<int>> map = generateRandomMap(n, m);
-            cout << "맵 생성완료 1:벽, 0:길" << endl;
-
-            // 맵 출력
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    cout << map[i][j] << " ";
-                }
-                cout << endl;
+    //맵 출력
+    for (int i = 0; i < map.size(); i++) {
+        for (int j = 0; j < map[i].size(); j++) {
+            if (sx == j && sy == i) {
+                cout << "☆ ";      //출발점
             }
-
-            // 출발점 입력
-            int sx, sy;
-            cout << "출발점을 입력하세요 (x y / 0 0 ~ n-1 n-1까지): ";
-            cin >> sx >> sy;
-
-            // 도착점 입력
-            int ex, ey;
-            cout << "도착점을 입력하세요 (x y / 0 0 ~ n-1 n-1까지): ";
-            cin >> ex >> ey;
-
-            // 최단거리 구하기
-            int shortest_distance = bfs(map, sx, sy, ex, ey);
-
-            // 결과 출력
-            if (shortest_distance == -1) {
-                cout << "벽에 걸림, 도착점에 도달할 수 없습니다." << endl;
+            else if (ex == j && ey == i) {
+                cout << "★ ";      //도착점
+            }
+            else if (map[i][j]) {
+                cout << "X ";      //장애물
             }
             else {
-                cout << "최단거리: " << shortest_distance << endl;
+                cout << ". ";     //길
             }
         }
+        cout << endl;
     }
+
+
+    int shortestDist = bfs(map, sx, sy, ex, ey);
+    cout << "최단 거리: " << shortestDist << endl;
+
     return 0;
 }
+

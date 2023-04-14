@@ -20,7 +20,6 @@ public:
             int y = randInt(0, height_ - 1);
             map[y][x] = true;
         }
-
         return map;
     }
 
@@ -57,7 +56,7 @@ int bfs(const vector<vector<bool>>& map, int startX, int startY, int endX, int e
         q.pop();
 
         if (curr.x == endX && curr.y == endY) {
-            return curr.dist;
+           return curr.dist;
         }
 
         //현재 위치에서 갈 수 있는 4방향 체크
@@ -81,6 +80,7 @@ int main() {
     //맵 사이즈와 장애물 설정
     int width, height, numObstacles;
     int sx, sy, ex, ey;
+
     cout << "맵 사이즈 입력(x y): ";
     cin >> width >> height;
     cout << "장애물 개수 입력: ";
@@ -90,13 +90,13 @@ int main() {
     cout << "도착점 입력(x y): ";
     cin >> ex >> ey;
 
-    // Create a MapGenerator object with user input and a random seed
+    // 사용자에게 입력받고 랜덤시드를 통해 맵생성
     std::random_device rd;
     MapGenerator mapGen(width, height, numObstacles, rd());
 
     //맵 생성
     vector<vector<bool>> map = mapGen.generate();
-
+    int dist = bfs(map, sx, sy, ex, ey);
     //맵 출력
     for (int i = 0; i < map.size(); i++) {
         for (int j = 0; j < map[i].size(); j++) {
@@ -107,16 +107,14 @@ int main() {
                 cout << "★ ";      //도착점
             }
             else if (map[i][j]) {
-                cout << "X ";      //장애물
+                cout << "# ";      //장애물
             }
             else {
-                cout << ". ";     //길
+                cout << "- ";     //길
             }
         }
         cout << endl;
     }
-
-
     int shortestDist = bfs(map, sx, sy, ex, ey);
     cout << "최단 거리: " << shortestDist << endl;
 

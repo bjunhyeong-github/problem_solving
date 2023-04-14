@@ -3,6 +3,9 @@
 #include <queue>          
 #include <algorithm>
 #include <random>
+#include <unordered_map>
+#include <conio.h>
+
 using namespace std;          // std:: 생략
 
 class MapGenerator {
@@ -83,43 +86,56 @@ int main() {
     int width, height, numObstacles;
     int sx, sy, ex, ey;
 
-    cout << "맵 사이즈 입력(x y): ";
+    char c;
+    cout << "시작 하려면 아무키나 눌러주세요(ESC키를 누르면 종료됩니다....)" << endl ;
+    
+    while (true) {
+        c = _getch();
+        if (c == 27) { // ESC키를 누르면 프로그램 종료
+            cout << "Esc키를 눌러 프로그램이 종료됨" << endl;
+            break;
+        }
+    cout << "길찾기를 시작하겠습니다!" << endl;
+
+    cout << "맵 사이즈를 입력해주세요(x y): ";
     cin >> width >> height;
-    cout << "장애물 개수 입력: ";
+    cout << "장애물 개수를 입력해주세요: ";
     cin >> numObstacles;
-    cout << "출발점 입력(x y): ";
+    cout << "출발점을 입력해주세요(x y): ";
     cin >> sx >> sy;
-    cout << "도착점 입력(x y): ";
+    cout << "도착점을 입력해주세요(x y): ";
     cin >> ex >> ey;
 
-    // 사용자에게 입력받고 랜덤시드를 통해 맵생성
-    std::random_device rd;
-    MapGenerator mapGen(width, height, numObstacles, rd());
+    cout << "맵을 생성합니다" << endl;
+        // 사용자에게 입력받고 랜덤시드를 통해 맵생성
+        std::random_device rd;
+        MapGenerator mapGen(width, height, numObstacles, rd());
 
-    //맵 생성
-    vector<vector<bool>> map = mapGen.generate();
-    int dist = bfs(map, sx, sy, ex, ey);
-    //맵 출력
-    for (int i = 0; i < map.size(); i++) {
-        for (int j = 0; j < map[i].size(); j++) {
-            if (sx == j && sy == i) {
-                cout << "☆ ";      //출발점
+        //맵 생성
+        vector<vector<bool>> map = mapGen.generate();
+        int dist = bfs(map, sx, sy, ex, ey);
+        //맵 출력
+        for (int i = 0; i < map.size(); i++) {
+            for (int j = 0; j < map[i].size(); j++) {
+                if (sx == j && sy == i) {
+                    cout << "☆ ";      //출발점
+                }
+                else if (ex == j && ey == i) {
+                    cout << "★ ";      //도착점
+                }
+                else if (map[i][j]) {
+                    cout << "# ";      //장애물
+                }
+                else {
+                    cout << "- ";     //길
+                }
             }
-            else if (ex == j && ey == i) {
-                cout << "★ ";      //도착점
-            }
-            else if (map[i][j]) {
-                cout << "# ";      //장애물
-            }
-            else {
-                cout << "- ";     //길
-            }
+            cout << endl;
         }
-        cout << endl;
+        int shortestDist = bfs(map, sx, sy, ex, ey);  //BFS함수를 호출하여 최단거리 출력
+        cout << "최단 거리: " << shortestDist << endl;
+        cout << "계속 사용하시겠습니까?(ESC: 종료/ 아무키나 누르면 재시작)";
     }
-    int shortestDist = bfs(map, sx, sy, ex, ey);  //BFS함수를 호출하여 최단거리 출력
-    cout << "최단 거리: " << shortestDist << endl;
-
     return 0;
 }
 

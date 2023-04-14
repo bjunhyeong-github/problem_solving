@@ -105,8 +105,8 @@ int main() {
     cin >> sx >> sy;
     cout << "도착점을 입력해주세요(x y): ";
     cin >> ex >> ey;
-
     cout << "맵을 생성합니다" << endl;
+
         // 사용자에게 입력받고 랜덤시드를 통해 맵생성
         std::random_device rd;
         MapGenerator mapGen(width, height, numObstacles, rd());

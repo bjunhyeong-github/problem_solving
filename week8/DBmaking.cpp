@@ -5,40 +5,61 @@
 
 int main() {
     FILE* file;
-    char path[200];
-    int num_strings;
-    char** strings;
-
-    printf("읽고자 하는 파일의 경로를 입력해주세요 (예: C:\\\\Users\\\\YourUsername\\\\Desktop\\\\input.txt):\n");
-    scanf("%s", path);
-
-    file = fopen(path, "r");
+    file = fopen("DBText.txt", "r");
     if (file == NULL) {
-        printf("파일을 열 수 없습니다.\n");
+        printf("Cannot open file.\n");
         return 1;
     }
 
-    printf("원하는 배열의 크기를 입력하세요: ");
-    scanf("%d", &num_strings);
+    int intCount = 0, charCount = 0, stringCount = 0;
 
-    strings = (char**)malloc(num_strings * sizeof(char*));
-    for (int i = 0; i < num_strings; i++) {
-        strings[i] = (char*)malloc(100 * sizeof(char));
-        fgets(strings[i], 100, file);
-        strtok(strings[i], "\n"); // 줄바꿈 문자 삭제
+    int* i = NULL;
+    char* c = NULL;
+    char** s = NULL;
+
+    char line[1024];
+
+    while (fgets(line, sizeof(line), file)) {
+        for (int j = 0; j < strlen(line); j++) {
+            if (line[j] == '%') {
+                j++;
+                if (line[j] == 'd') {
+                    intCount++;
+                    i = (int*)realloc(i, sizeof(int) * intCount);
+                }
+                else if (line[j] == 'c') {
+                    charCount++;
+                    c = (char*)realloc(c, sizeof(char) * charCount);
+                }
+                else if (line[j] == 's') {
+                    stringCount++;
+                    s = (char**)realloc(s, sizeof(char*) * stringCount);
+                    s[stringCount - 1] = (char*)malloc(sizeof(char) * 100);
+                }
+            }
+        }
     }
+
+    // 임의의 값 저장
+    i[0] = 98;
+    c[0] = 'A';
+    strcpy(s[0], "멋진 이은석님");
+
+    printf("int(%d개): %d\n", intCount, i[0]);
+    printf("char(%d개): %c\n", charCount, c[0]);
+    printf("string(%d개): %s\n", stringCount, s[0]);
 
     fclose(file);
 
-    printf("\n출력:\n");
-    for (int i = 0; i < num_strings; i++) {
-        printf("문자열 %d: %s\n", i + 1, strings[i]);
-    }
+    printf("내 이름은 %s이고 이번학기 점수는 %d점이고 성적은 %c를 받았습니다.\n", s[0], i[0], c[0]);
 
-    for (int i = 0; i < num_strings; i++) {
-        free(strings[i]);
+    free(i);
+    free(c);
+    for (int j = 0; j < stringCount; j++) {
+        free(s[j]);
     }
-    free(strings);
+    free(s);
 
     return 0;
 }
+
